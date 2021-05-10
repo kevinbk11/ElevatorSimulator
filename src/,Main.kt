@@ -119,7 +119,7 @@ fun main(args:Array<String>)
         {
             for(floor in elevator.nowFloor..elevator.maxFloor-1)
             {
-                if(elevator.floor[floor]==1)
+                if(elevator.floor[floor]==1)v
                 {
                     elevator.Move()
                     break
