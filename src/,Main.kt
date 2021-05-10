@@ -4,7 +4,6 @@ import java.text.BreakIterator
 
 class Elevator
 {
-
     init{
         ControlTable.contentPane=Panel.panel
         ControlTable.isResizable=false
@@ -16,72 +15,72 @@ class Elevator
         {
             var N=n
             btn.addActionListener {
-                if(floor[N]!=2)
-                {
                     floor[N]=1
-                }
                 println(floor)
             }
             n++
         }
     }
-    var nowDirection = 0 //1=up 2=down 0=stop
+    var nowDirection = 0 //1=up -1=down 0=stop
     var nowFloor = 1
-    var floor = mutableListOf(2,0,0,0,0,0,0,0)
+    var floor = mutableListOf(0,0,0,0,0,0,0,0)
     val maxFloor=floor.size
     val minFloor=1
-    fun Move()
+    fun CheckUp():Boolean
     {
-        if (nowDirection==1 && nowFloor!=maxFloor)
+        for(floor in nowFloor..maxFloor-1)
         {
-            floor[nowFloor-1]=0
-            nowFloor+=1
-            print(nowFloor)
-            if(floor[nowFloor-1]==1)
+            if(this.floor[floor]==1)
             {
-                floor[nowFloor-1]=2
-                println("已到目標樓層 ${nowFloor}樓")
-                Panel.floor.text=nowFloor.toString()
-                Panel.Door.text="開門"
-                Thread.sleep(3500)
-                Panel.Door.text="關門"
-                for(floor in nowFloor-1..maxFloor)
-                {
-                    if(this.floor[floor-1]==1)
-                    {
-                        nowDirection=1
-                        break
-                    }
-                    else
-                    {
-                        nowDirection=0
-                    }
-                }
+                nowDirection=1
+                return true
+            }
+            else
+            {
+                nowDirection=0
             }
         }
-        else if(nowDirection==2 && nowFloor!=minFloor)
+        return false
+    }
+    fun CheckDown():Boolean
+    {
+        for(floor in nowFloor-1 downTo minFloor)
+        {
+            if(this.floor[floor]==1)
+            {
+                nowDirection=-1
+                return true
+            }
+            else
+            {
+                nowDirection=0
+            }
+        }
+        return false
+    }
+    fun Move()
+    {
+        nowFloor+=nowDirection
+        if(floor[nowFloor-1]==1)
         {
             floor[nowFloor-1]=0
-            nowFloor-=1
-            if(floor[nowFloor-1]==1)
+            println("已到目標樓層 ${nowFloor}樓")
+            Panel.floor.text=nowFloor.toString()
+            Panel.Door.text="開門"
+            Thread.sleep(3500)
+            Panel.Door.text="關門"
+            if(nowDirection==1)
             {
-                floor[nowFloor-1]=2
-                println("已到目標樓層 ${nowFloor}樓")
-                Panel.floor.text=nowFloor.toString()
-                Panel.Door.text="開門"
-                Thread.sleep(3500)
-                Panel.Door.text="關門"
-                for(floor in nowFloor-1 downTo minFloor)
+                if(!CheckUp()){
+                    CheckDown()
+                }
+
+            }
+            else if(nowDirection==-1)
+            {
+                if(!CheckDown())
                 {
-                    if(this.floor[floor]==1)
-                    {
-                        nowDirection=2
-                        break
-                    }
-                    else
-                    {
-                        nowDirection=0
-                    }
+                    CheckUp()
                 }
             }
         }
@@ -98,7 +97,7 @@ class Elevator
             }
             else if(this.floor[floor]==1 && floor<=nowFloor)
             {
-                nowDirection=2
+                nowDirection=-1
                 break
             }
         }
@@ -112,31 +111,9 @@ fun main(args:Array<String>)
         if(elevator.nowDirection==0)
         {
             elevator.Check()
-
         }
         Thread.sleep(1000)
-        if(elevator.nowDirection==1)
-        {
-            for(floor in elevator.nowFloor..elevator.maxFloor-1)
-            {
-                if(elevator.floor[floor]==1)v
-                {
-                    elevator.Move()
-                    break
-                }
-            }
-        }
-        else if(elevator.nowDirection==2)
-        {
-            for(floor in elevator.nowFloor-1 downTo elevator.minFloor-1)
-            {
-                if(elevator.floor[floor]==1)
-                {
-                    elevator.Move()
-                    break
-                }
-            }
-        }
+        elevator.Move()
         Panel.floor.text=elevator.nowFloor.toString()
     }
 }
